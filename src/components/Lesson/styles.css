@@ -1,0 +1,15 @@
+.lesson-container {
+  @apply text-gray-300;
+}
+
+.lesson-content {
+  @apply rounded border border-gray-500 p-4 mt-2;
+}
+
+.lesson-header {
+  @apply flex items-center justify-between;
+}
+
+.lesson-live-card {
+  @apply text-xs rounded py-[0.125rem] px-2 text-white border border-green-300 font-bold;
+}
