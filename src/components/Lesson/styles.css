@@ -13,3 +13,11 @@
 .lesson-live-card {
   @apply text-xs rounded py-[0.125rem] px-2 text-white border border-green-300 font-bold;
 }
+
+.lesson-content-active {
+  @apply bg-green-500 rounded p-4 mt-2 hover:bg-green-300 transition-colors;
+}
+
+.lesson-content-active span {
+  @apply text-gray-100;
+}

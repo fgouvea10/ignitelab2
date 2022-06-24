@@ -1,4 +1,3 @@
-import { gql, useQuery } from "@apollo/client";
 import { DefaultUi, Player, Youtube } from "@vime/react";
 import {
   CaretRight,
@@ -7,49 +6,22 @@ import {
   Lightning,
   Image,
 } from "phosphor-react";
+import { useGetLessonBySlugQuery } from "../../graphql/generated";
 
 import "./styles.css";
-
-const GET_LESSON_BY_SLUG_QUERY = gql`
-  query GetLessonBySlug($slug: String) {
-    lesson(where: { slug: $slug }) {
-      title
-      videoId
-      description
-      teacher {
-        bio
-        avatarURL
-        name
-      }
-    }
-  }
-`;
-
-interface GetLessonBySlugResponse {
-  lesson: {
-    title: string;
-    videoId: string;
-    description: string;
-    teacher: {
-      bio: string;
-      avatarURL: string;
-      name: string;
-    };
-  };
-}
 
 interface VideoProps {
   lessonSlug: string;
 }
 
 export function Video({ lessonSlug }: VideoProps) {
-  const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+  const { data } = useGetLessonBySlugQuery({
     variables: {
       slug: lessonSlug,
     },
   });
 
-  if (!data) {
+  if (!data || !data.lesson) {
     return (
       <div className="video-container">
         <p>loading...</p>
@@ -74,14 +46,16 @@ export function Video({ lessonSlug }: VideoProps) {
             <h1 className="class-title">{data.lesson.title}</h1>
             <p className="class-description">{data.lesson.description}</p>
 
-            <div className="author-container-img">
-              <img src={data.lesson.teacher.avatarURL} />
+            {data.lesson.teacher && (
+              <div className="author-container-img">
+                <img src={data.lesson.teacher.avatarURL} />
 
-              <div className="author-info">
-                <strong>{data.lesson.teacher.name}</strong>
-                <span>{data.lesson.teacher.bio}</span>
+                <div className="author-info">
+                  <strong>{data.lesson.teacher.name}</strong>
+                  <span>{data.lesson.teacher.bio}</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="buttons-container">
