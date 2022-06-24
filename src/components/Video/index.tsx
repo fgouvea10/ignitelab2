@@ -1,3 +1,4 @@
+import { gql, useQuery } from "@apollo/client";
 import { DefaultUi, Player, Youtube } from "@vime/react";
 import {
   CaretRight,
@@ -9,13 +10,59 @@ import {
 
 import "./styles.css";
 
-export function Video() {
+const GET_LESSON_BY_SLUG_QUERY = gql`
+  query GetLessonBySlug($slug: String) {
+    lesson(where: { slug: $slug }) {
+      title
+      videoId
+      description
+      teacher {
+        bio
+        avatarURL
+        name
+      }
+    }
+  }
+`;
+
+interface GetLessonBySlugResponse {
+  lesson: {
+    title: string;
+    videoId: string;
+    description: string;
+    teacher: {
+      bio: string;
+      avatarURL: string;
+      name: string;
+    };
+  };
+}
+
+interface VideoProps {
+  lessonSlug: string;
+}
+
+export function Video({ lessonSlug }: VideoProps) {
+  const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+    variables: {
+      slug: lessonSlug,
+    },
+  });
+
+  if (!data) {
+    return (
+      <div className="video-container">
+        <p>loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="video-container">
       <div className="video-player-content">
         <div className="video">
           <Player>
-            <Youtube videoId="Ox_zb2cs9zM" />
+            <Youtube videoId={data.lesson.videoId} />
             <DefaultUi />
           </Player>
         </div>
@@ -24,20 +71,15 @@ export function Video() {
       <div className="class-info-container">
         <div className="class-info-content">
           <div className="wrapper">
-            <h1 className="class-title">Aula 01 - Abertura do Ignite Lab</h1>
-            <p className="class-description">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
-              iusto odit optio, voluptatem ex in ab accusamus facilis vitae,
-              necessitatibus sed laborum natus officiis praesentium facere
-              explicabo illo distinctio ullam.
-            </p>
+            <h1 className="class-title">{data.lesson.title}</h1>
+            <p className="class-description">{data.lesson.description}</p>
 
             <div className="author-container-img">
-              <img src="https://github.com/fgouvea10.png" />
+              <img src={data.lesson.teacher.avatarURL} />
 
               <div className="author-info">
-                <strong>Felipe Gouvea</strong>
-                <span>Co-founder and CTO at versee</span>
+                <strong>{data.lesson.teacher.name}</strong>
+                <span>{data.lesson.teacher.bio}</span>
               </div>
             </div>
           </div>
