@@ -7,7 +7,7 @@ import { Video } from "../../components/Video";
 
 import "./styles.css";
 
-export default function Event() {
+export function Event() {
   const { slug } = useParams<{ slug: string }>();
 
   return (
